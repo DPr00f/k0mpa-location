@@ -2,7 +2,9 @@
 import { useCallback, useEffect, useState } from "react";
 
 export const useHashOptions = () => {
-  const [hash, setHash] = useState(() => window.location.hash);
+  const [hash, setHash] = useState(() =>
+    typeof window === "undefined" ? "" : window.location.hash,
+  );
   const [options, setOptions] = useState<Record<string, string>>({});
 
   const hashChangeHandler = useCallback(() => {
