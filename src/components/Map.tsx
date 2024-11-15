@@ -53,9 +53,5 @@ export default function Map() {
     marker.setLatLng([latitude, longitude]);
   }, [map, coordinates, marker]);
 
-  return (
-    <div ref={mapRef} className="h-full">
-      <h1>Map</h1>
-    </div>
-  );
+  return <div ref={mapRef} className="h-full"></div>;
 }
