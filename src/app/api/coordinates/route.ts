@@ -2,13 +2,13 @@ import { db } from "~/server/db";
 import z from "zod";
 import { env } from "~/env";
 
-export const RequestType = z.object({
+const RequestType = z.object({
   longitude: z.number(),
   latitude: z.number(),
   id: z.string(),
 });
 
-export const ResponseType = z.object({
+const ResponseType = z.object({
   latitude: z.number(),
   longitude: z.number(),
 });
