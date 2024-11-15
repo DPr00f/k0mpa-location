@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.marker-pin {
+  width: 40px;
+  height: 40px;
+  border-radius: 50% 50% 50% 0;
+  background: #546de5;
+  position: absolute;
+  transform: rotate(-45deg);
+  left: 50%;
+  top: 50%;
+  margin: -15px 0 0 -15px;
+}
+
+.marker-pin::after {
+  content: "";
+  width: 34px;
+  height: 34px;
+  margin: 3px 0 0 3px;
+  background: #fff;
+  background-image: url("/k0mpass.png");
+  background-size: 100%;
+  transform: rotate(45deg);
+  position: absolute;
+  border-radius: 50%;
+}

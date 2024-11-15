@@ -9,6 +9,11 @@ const config = {
   async rewrites() {
     return [
       {
+        source: "/tiles/dark/:path*",
+        destination:
+          "https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/:path*",
+      },
+      {
         source: "/tiles/:path*",
         destination: "https://tiles.stadiamaps.com/tiles/alidade_smooth/:path*",
       },

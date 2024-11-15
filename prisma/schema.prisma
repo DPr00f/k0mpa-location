@@ -21,3 +21,14 @@ model Location {
 
   @@index([name])
 }
+
+model Locations {
+  id        Int      @id @default(autoincrement())
+  name      String
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+}

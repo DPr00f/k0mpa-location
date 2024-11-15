@@ -1,6 +1,5 @@
 import { db } from "~/server/db";
 import z from "zod";
-import { env } from "~/env";
 
 const RequestType = z.object({
   longitude: z.number(),
@@ -26,12 +25,6 @@ export async function GET() {
 }
 
 export async function PUT(request: Request) {
-  const apiPassword = request.headers.get("x-api-password");
-
-  if (apiPassword !== env.API_PASSWORD) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
   const body = (await request.json()) as z.infer<typeof RequestType>;
   try {
     RequestType.parse(body);
@@ -51,6 +44,41 @@ export async function PUT(request: Request) {
       where: { name },
       update: { latitude, longitude },
       create: { name, latitude, longitude },
+    });
+  } catch (ex) {
+    return Response.json(
+      {
+        error: ex,
+      },
+      { status: 500 },
+    );
+  }
+
+  return Response.json({ status: 200 });
+}
+
+export async function POST(request: Request) {
+  const body = (await request.json()) as z.infer<typeof RequestType>;
+  try {
+    RequestType.parse(body);
+  } catch (error) {
+    return Response.json(
+      {
+        error,
+      },
+      { status: 400 },
+    );
+  }
+
+  const { id: name, latitude, longitude } = body;
+
+  try {
+    await db.locations.create({
+      data: {
+        name,
+        latitude,
+        longitude,
+      },
     });
   } catch (ex) {
     return Response.json(
