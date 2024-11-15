@@ -30,8 +30,9 @@ export default function Map() {
 
         const _map = L.map(mapRef.current).setView([latitude, longitude], 7);
 
-        L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
+        // L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        L.tileLayer("/tiles/{z}/{x}/{y}{r}.png", {
+          maxZoom: 20,
         }).addTo(_map);
 
         const _marker = L.marker([latitude, longitude]);

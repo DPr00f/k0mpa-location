@@ -9,6 +9,7 @@ export const env = createEnv({
   server: {
     POSTGRES_URL: z.string().url(),
     API_PASSWORD: z.string(),
+    STADIA_API_KEY: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
       .default("development"),
@@ -30,6 +31,7 @@ export const env = createEnv({
   runtimeEnv: {
     POSTGRES_URL: process.env.POSTGRES_URL,
     API_PASSWORD: process.env.API_PASSWORD,
+    STADIA_API_KEY: process.env.STADIA_API_KEY,
     NODE_ENV: process.env.NODE_ENV,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
