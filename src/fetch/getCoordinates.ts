@@ -1,5 +1,5 @@
 export const getCoordinates = async () => {
-  const isServer = typeof window === "undefined";
+  const isServer = typeof global.window === "undefined";
   const res = await fetch(
     (isServer ? "http://127.0.0.1:3000" : "") + "/api/coordinates",
     {
