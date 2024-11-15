@@ -3,7 +3,11 @@ import { useCallback, useEffect, useState } from "react";
 
 export const useHashOptions = () => {
   const [hash, setHash] = useState(() =>
-    typeof window === "undefined" ? "" : window.location.hash,
+    typeof window === "undefined"
+      ? ""
+      : !window.location.hash || window.location.hash === "#"
+        ? window.location.search.replace("?", "")
+        : window.location.hash.replace("#", ""),
   );
   const [options, setOptions] = useState<Record<string, string>>({});
 
@@ -19,19 +23,16 @@ export const useHashOptions = () => {
   }, [hashChangeHandler]);
 
   useEffect(() => {
-    const hashOptions = hash
-      .slice(1)
-      .split("&")
-      .reduce((acc, hashOption) => {
-        const [key, value] = hashOption.split("=");
+    const hashOptions = hash.split("&").reduce((acc, hashOption) => {
+      const [key, value] = hashOption.split("=");
 
-        if (!key || !value) return acc;
+      if (!key || !value) return acc;
 
-        return {
-          ...acc,
-          [key]: value,
-        };
-      }, {});
+      return {
+        ...acc,
+        [key]: value,
+      };
+    }, {});
     setOptions(hashOptions);
     window.location.hash = "";
   }, [hash]);
