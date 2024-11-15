@@ -7,7 +7,7 @@ export const useMap = ({
   coordinates,
 }: {
   mapReference: React.MutableRefObject<null>;
-  coordinates?: { latitude: number; longitude: number };
+  coordinates?: { latitude: number; longitude: number; hidden?: boolean };
 }) => {
   const { L } = useLeaflet();
   const [map, setMap] = useState<L.Map | null>(null);
@@ -19,12 +19,10 @@ export const useMap = ({
 
   // First setup of the map
   useEffect(() => {
-    if (!L || map || !mapReference.current || !coordinates) return;
-
-    const { latitude, longitude } = coordinates;
+    if (!L || map || !mapReference.current) return;
 
     const _map = L.map(mapReference.current, { zoomControl: false }).setView(
-      [latitude, longitude],
+      [40.12069594820592, -8.61836346069649],
       options.zoom ? Number(options.zoom) : 7,
     );
 
@@ -33,6 +31,17 @@ export const useMap = ({
     L.tileLayer(`/tiles${isDarkMode ? "/dark" : ""}/{z}/{x}/{y}{r}.png`, {
       maxZoom: 20,
     }).addTo(_map);
+
+    setMap(_map);
+  }, [mapReference, map, L, options]);
+
+  // Add marker
+  useEffect(() => {
+    if (!L || !map || !coordinates) return;
+
+    const { latitude, longitude } = coordinates;
+
+    if (!latitude || !longitude) return;
 
     const icon = L.divIcon({
       className: "k0mpa-face",
@@ -43,17 +52,27 @@ export const useMap = ({
 
     const _marker = L.marker([latitude, longitude], { icon: icon });
 
-    _marker.addTo(_map);
+    _marker.addTo(map);
 
-    setMap(_map);
     setMarker(_marker);
-  }, [mapReference, coordinates, map, L, options]);
+  }, [L, map, coordinates]);
+
+  // Remove marker
+  useEffect(() => {
+    if (!marker || !coordinates?.hidden) return;
+
+    marker.remove();
+
+    setMarker(null);
+  }, [marker, coordinates]);
 
   // On coordinates change
   useEffect(() => {
     if (!map || !coordinates || !marker) return;
 
     const { latitude, longitude } = coordinates;
+
+    if (!latitude || !longitude) return;
 
     map.setView([latitude, longitude]);
     marker.setLatLng([latitude, longitude]);

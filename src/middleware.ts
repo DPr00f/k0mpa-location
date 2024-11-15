@@ -1,20 +1,12 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { env } from "./env";
+import addStadiaApiKey from "./server/middlewares/addStadiaApiKey";
+import protectCoordinatesApi from "./server/middlewares/protectCoordinatesApi";
 
 export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
-  if (request.url.includes("/tiles/")) {
-    requestHeaders.set("Authorization", `Stadia-Auth ${env.STADIA_API_KEY}`);
-  }
-
-  if (request.url.includes("/api/coordinates") && request.method !== "GET") {
-    const apiPassword = requestHeaders.get("x-api-password");
-
-    if (apiPassword !== env.API_PASSWORD) {
-      return new Response("Unauthorized", { status: 401 });
-    }
-  }
+  addStadiaApiKey(request);
+  protectCoordinatesApi(request);
 
   const response = NextResponse.next({
     request: {

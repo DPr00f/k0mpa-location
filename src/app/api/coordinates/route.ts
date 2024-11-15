@@ -1,5 +1,7 @@
 import { db } from "~/server/db";
 import z from "zod";
+import { getSettings } from "~/server/utils";
+import { setMinutes, setHours, startOfToday, isWithinInterval } from "date-fns";
 
 const RequestType = z.object({
   longitude: z.number(),
@@ -12,7 +14,42 @@ const ResponseType = z.object({
   longitude: z.number(),
 });
 
+const hasLock = (
+  settings: Record<string, string>,
+): settings is { unlockAt: string; lockAt: string } => {
+  if ("lockAt" in settings && "unlockAt" in settings) {
+    return true;
+  }
+
+  return false;
+};
+
 export async function GET() {
+  const settings = await getSettings();
+
+  if (hasLock(settings)) {
+    const [hoursLock, minutesLock] = settings.lockAt.split(":");
+    const [hoursUnlock, minutesUnlock] = settings.unlockAt.split(":");
+
+    const lockTimeUTC = setMinutes(
+      setHours(startOfToday(), Number(hoursLock)),
+      Number(minutesLock),
+    );
+    const unlockTimeUTC = setMinutes(
+      setHours(startOfToday(), Number(hoursUnlock)),
+      Number(minutesUnlock),
+    );
+
+    const isUnlocked = isWithinInterval(new Date(), {
+      start: unlockTimeUTC,
+      end: lockTimeUTC,
+    });
+
+    if (!isUnlocked) {
+      return Response.json({ hidden: true }, { status: 200 });
+    }
+  }
+
   const coordinates = await db.location.findFirst({
     where: { name: "k0mpass" },
   });
