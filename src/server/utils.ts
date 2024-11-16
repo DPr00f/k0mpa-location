@@ -28,8 +28,6 @@ export const isLocked = ({
   const lockTime = Number(`${hoursLock}${minutesLock}`);
   const unlockTime = Number(`${hoursUnlock}${minutesUnlock}`);
 
-  // Do a different logic here because we won't care about the interval anymore
-
   const lockTimeUTC = setMinutes(
     setHours(startOfDay(date), Number(hoursLock)),
     Number(minutesLock),
@@ -44,9 +42,7 @@ export const isLocked = ({
     end: lockTimeUTC,
   });
 
-  if (lockTime < unlockTime) {
-    return isWithin;
-  }
-
-  return !isWithin;
+  // Note: The ternary is to make sure that we accomodate for the case
+  // when the user passes a lock/unlock time that will be across 2 days, for example 22:00 to 06:00
+  return lockTime < unlockTime ? isWithin : !isWithin;
 };
