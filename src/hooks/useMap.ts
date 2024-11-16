@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLeaflet } from "./useLeaflet";
 import { useHashOptions } from "./useHashOptions";
+import useTheme from "~/stores/useTheme";
 
 export const useMap = ({
   mapReference,
@@ -12,6 +13,7 @@ export const useMap = ({
   const { L } = useLeaflet();
   const [map, setMap] = useState<L.Map | null>(null);
   const [marker, setMarker] = useState<L.Marker | null>(null);
+  const { theme, setDark } = useTheme();
 
   const { options } = useHashOptions() as {
     options: { mode?: "dark"; zoom?: string };
@@ -86,12 +88,18 @@ export const useMap = ({
     }
 
     if (options.mode) {
-      const isDarkMode = options.mode === "dark";
-      map?.eachLayer((layer) => {
-        if (layer instanceof L.TileLayer) {
-          layer.setUrl(`/tiles${isDarkMode ? "/dark" : ""}/{z}/{x}/{y}{r}.png`);
-        }
-      });
+      setDark(options.mode === "dark");
     }
-  }, [options, map, L]);
+  }, [options, map, L, setDark]);
+
+  useEffect(() => {
+    if (!L) return;
+
+    const isDarkMode = theme === "dark";
+    map?.eachLayer((layer) => {
+      if (layer instanceof L.TileLayer) {
+        layer.setUrl(`/tiles${isDarkMode ? "/dark" : ""}/{z}/{x}/{y}{r}.png`);
+      }
+    });
+  }, [theme, map, L]);
 };

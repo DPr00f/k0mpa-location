@@ -9,10 +9,10 @@ export const useHashOptions = () => {
         ? window.location.search.replace("?", "")
         : window.location.hash.replace("#", ""),
   );
-  const [options, setOptions] = useState<Record<string, string>>({});
+  const [options, setOptions] = useState<Record<string, string | boolean>>({});
 
   const hashChangeHandler = useCallback(() => {
-    setHash(window.location.hash);
+    setHash(window.location.hash.replace("#", ""));
   }, []);
 
   useEffect(() => {
@@ -24,9 +24,14 @@ export const useHashOptions = () => {
 
   useEffect(() => {
     const hashOptions = hash.split("&").reduce((acc, hashOption) => {
-      const [key, value] = hashOption.split("=");
+      const [key, _value] = hashOption.split("=");
+      let value: string | boolean | undefined = _value;
 
-      if (!key || !value) return acc;
+      if (!key) return acc;
+
+      if (!value) {
+        value = true;
+      }
 
       return {
         ...acc,
@@ -34,7 +39,6 @@ export const useHashOptions = () => {
       };
     }, {});
     setOptions(hashOptions);
-    window.location.hash = "";
   }, [hash]);
 
   return {
