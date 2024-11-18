@@ -39,7 +39,7 @@ export const useMap = ({
 
   // Add marker
   useEffect(() => {
-    if (!L || !map || !coordinates) return;
+    if (!L || !map || !coordinates || marker) return;
 
     const { latitude, longitude } = coordinates;
 
@@ -57,7 +57,7 @@ export const useMap = ({
     _marker.addTo(map);
 
     setMarker(_marker);
-  }, [L, map, coordinates]);
+  }, [L, map, coordinates, marker]);
 
   // Remove marker
   useEffect(() => {
