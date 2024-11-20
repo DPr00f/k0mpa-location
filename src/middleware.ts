@@ -18,5 +18,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/tiles/:path*", "/api/:path*"],
+  matcher: ["/tiles/:path*", "/api/:path*", "/vector/:path*"],
 };

@@ -10,7 +10,7 @@ export const useMap = ({
   mapReference: React.MutableRefObject<null>;
   coordinates?: { latitude: number; longitude: number; hidden?: boolean };
 }) => {
-  const { L } = useLeaflet();
+  const { L, isLoading } = useLeaflet();
   const [map, setMap] = useState<L.Map | null>(null);
   const [marker, setMarker] = useState<L.Marker | null>(null);
   const { theme, setDark } = useTheme();
@@ -21,7 +21,7 @@ export const useMap = ({
 
   // First setup of the map
   useEffect(() => {
-    if (!L || map || !mapReference.current) return;
+    if (!L || isLoading || map || !mapReference.current) return;
 
     const _map = L.map(mapReference.current, { zoomControl: false }).setView(
       [40.12069594820592, -8.61836346069649],
@@ -30,12 +30,12 @@ export const useMap = ({
 
     const isDarkMode = options.mode === "dark";
 
-    L.tileLayer(`/tiles${isDarkMode ? "/dark" : ""}/{z}/{x}/{y}{r}.png`, {
-      maxZoom: 20,
+    L.maplibreGL({
+      style: `/vector/alidade_smooth${isDarkMode ? "_dark" : ""}.json`,
     }).addTo(_map);
 
     setMap(_map);
-  }, [mapReference, map, L, options]);
+  }, [mapReference, map, L, options, isLoading]);
 
   // Add marker
   useEffect(() => {
@@ -99,6 +99,11 @@ export const useMap = ({
     map?.eachLayer((layer) => {
       if (layer instanceof L.TileLayer) {
         layer.setUrl(`/tiles${isDarkMode ? "/dark" : ""}/{z}/{x}/{y}{r}.png`);
+      }
+      if (layer instanceof L.MaplibreGL) {
+        layer
+          .getMaplibreMap()
+          .setStyle(`/vector/alidade_smooth${isDarkMode ? "_dark" : ""}.json`);
       }
     });
   }, [theme, map, L]);
